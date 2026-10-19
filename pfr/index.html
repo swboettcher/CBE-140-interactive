@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Explore plug flow, a differential shell balance, and the PFR design integral using the CBE 140 course models.">
+<meta name="theme-color" content="#163d43">
+<title>Inside a Plug-Flow Reactor · CBE 140</title>
+<style>
+:root{--ink:#19383e;--muted:#597076;--teal:#087f7b;--teal-pale:#e5f3f0;--navy:#325c9c;--amber:#ce691d;--gold:#f6c36b;--paper:#f5f5ef;--line:#d8e2df;--white:#fff;--hydrogen:#678bad;--product:#087f7b;--nitrogen:#384f83;--shadow:0 5px 24px #21474008}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button,select,input[type=range]{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--amber);outline-offset:4px}button{border:1px solid var(--line);border-radius:8px;padding:9px 14px;color:var(--ink);background:#fff;font-weight:650}button:hover{border-color:var(--teal);background:#f0f8f5}button.primary{background:var(--teal);color:#fff;border-color:var(--teal)}button.primary:hover{background:#086966}button:disabled{cursor:default;opacity:.5}a{color:var(--teal)}header{border-bottom:1px solid var(--line);background:#fff}header .bar{max-width:1440px;margin:auto;padding:17px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px}.mark{display:grid;place-items:center;background:var(--ink);color:white;width:38px;height:38px;border-radius:11px}.brand strong{font-size:14px}.brand span{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.top-actions{display:flex;gap:10px}.top-actions button{font-size:12px;padding:7px 12px}
+.page{max-width:1440px;margin:auto;padding:29px 32px 38px}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:24px}.eyebrow{text-transform:uppercase;font-size:11px;font-weight:750;letter-spacing:.15em;color:var(--teal);margin-bottom:5px}h1{font:normal 36px/1.15 Georgia,"Times New Roman",serif;margin:0 0 8px;letter-spacing:-.025em}.intro p{margin:0;color:var(--muted);max-width:750px}.reaction{font:22px Georgia,serif;white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 20px}.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;align-items:start}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}aside{padding:21px;position:sticky;top:18px}h2{font-size:16px;margin:0 0 10px;line-height:1.35}h3{font-size:14px;margin:0 0 8px}.control{margin-top:23px}.control:first-child{margin-top:0}.control-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}label,.control-head strong{font-size:12px;font-weight:700}.value{font-size:13px;color:var(--teal);font-variant-numeric:tabular-nums;font-weight:750}select{width:100%;color:var(--ink);padding:10px 30px 10px 10px;border:1px solid var(--line);border-radius:7px;background:white;font-size:13px}input[type=range]{width:100%;accent-color:var(--teal);margin:4px 0}.end-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.hint{font-size:12px;color:var(--muted);margin:7px 0 0;line-height:1.5}.unit{font-weight:450;color:var(--muted)}.hairline{height:1px;background:var(--line);margin:22px 0}.assumptions{margin:0;padding-left:16px;font-size:12px;color:var(--muted)}.assumptions li{margin:7px 0}.model-badge{display:inline-flex;align-items:center;gap:5px;border-radius:4px;background:var(--teal-pale);padding:3px 6px;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.04em;margin-top:8px}.main{min-width:0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}.step{border-radius:9px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:13px;padding:12px 8px;background:#ffffff8f;font-weight:600}.step .num{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#e9eeeb;font-size:11px}.step[aria-selected=true]{background:var(--ink);color:#fff;border-color:var(--ink)}.step[aria-selected=true] .num{background:#ffffff26}.reactor-card{overflow:hidden}.card-head{padding:20px 23px 0;display:flex;align-items:center;justify-content:space-between;gap:10px}.card-head h2{margin:0}.steady{font-size:11px;color:var(--teal);display:flex;align-items:center;gap:6px;white-space:nowrap}.steady:before{content:"";width:6px;height:6px;background:var(--teal);border-radius:50%}.context-line{font-size:12px;color:var(--muted);margin:7px 23px 0;min-height:36px}.reactor-figure{margin:0 15px}.reactor-figure svg{width:100%;height:auto;display:block;touch-action:pan-y}.reactor-figure text{font-family:system-ui,sans-serif}.legend{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;font-size:11px;color:var(--muted);padding:0 12px 13px}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:10px;height:10px;border-radius:50%;display:inline-block;background:var(--nitrogen)}.legend .outline{border-radius:2px;border:2px solid var(--amber);background:#fff}.legend .shell{border-radius:2px;background:#b6ded6;border:1px dashed var(--teal)}.scrubber{display:flex;align-items:center;gap:14px;padding:15px 23px;border-top:1px solid var(--line);background:#fbfcf9}.scrubber button{min-width:94px}.position-control{flex:1;min-width:0}.position-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:1px}.position-label output{font-weight:700}.play-note{font-size:10px;color:var(--muted);text-align:right;margin-top:4px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line)}.metric{padding:15px 20px;min-width:0;border-right:1px solid var(--line)}.metric:last-child{border:0}.metric span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.metric strong{font-size:24px;font-weight:650;letter-spacing:-.025em;line-height:1.2;font-variant-numeric:tabular-nums}.metric small{font-size:11px;color:var(--muted);display:block;margin-top:5px}.metric .smallval{font-size:21px}.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.chart-card{padding:19px 20px 13px;min-width:0}.chart-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0}.chart-heading h2{font-size:14px;margin:0}.chart-card svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}.chart-footer{font-size:11px;color:var(--muted);margin:0;min-height:34px}.micro-toggle{font-size:11px!important;background:#f8faf8;padding:4px 7px;font-weight:600}.chart-totals{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:11px;border-top:1px solid var(--line);padding-top:9px;margin-top:8px;color:var(--muted)}.chart-totals strong{font-size:15px;color:var(--teal);font-variant-numeric:tabular-nums}.equation-panel{margin-top:16px;padding:22px 23px}.section-label{display:flex;align-items:center;gap:8px;margin-bottom:12px}.section-label .number{font-size:11px;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;background:var(--teal-pale);color:var(--teal);font-weight:800}.section-label h2{margin:0}.teaching-copy{font-size:13px;color:var(--muted);margin:0 0 13px}.eq{font:19px/1.6 Georgia,"Times New Roman",serif;color:var(--ink);text-align:center;overflow-x:auto;padding:7px 0 10px}.eq math{font-size:20px}.eq.small math{font-size:17px}.eq.highlight{background:#eef7f3;border:1px solid #d5e9e3;border-radius:8px;padding:12px;margin:10px 0}.equation-pair{display:grid;grid-template-columns:1fr 1fr;gap:15px}.equation-pair>div{min-width:0}.equation-caption{font-size:11px;color:var(--muted);text-align:center;margin:5px 0}.balance-strip{display:grid;grid-template-columns:1fr 24px 1fr 24px 1fr 24px 1fr;align-items:center;gap:4px;padding:14px 8px;background:#f4f7f3;border-radius:9px;margin-top:12px;text-align:center}.balance-strip label{display:block;font-size:10px;color:var(--muted);font-weight:600}.balance-strip strong{font-size:17px;font-variant-numeric:tabular-nums;display:block}.balance-strip .op{font:21px Georgia,serif;color:var(--muted)}.balance-strip .negative{color:var(--amber)}.inset{background:#f6f8f5;border:1px solid #e4eae5;border-radius:9px;padding:13px 15px;margin-top:14px;font-size:12px;color:var(--muted)}.inset strong{color:var(--ink)}.shell-info{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}.shell-info>div{padding:10px 12px;border:1px solid var(--line);border-radius:7px}.shell-info span{display:block;font-size:10px;color:var(--muted)}.shell-info strong{font-size:14px;font-variant-numeric:tabular-nums}.sign-key{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:12px}.profile-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:13px;font-variant-numeric:tabular-nums}.profile-table th{color:var(--muted);font-weight:600;font-size:10px;text-align:right;padding:7px 6px;border-bottom:1px solid var(--line)}.profile-table td{padding:7px 6px;text-align:right;border-bottom:1px solid #edf1ec}.profile-table td:first-child,.profile-table th:first-child{text-align:left}.dot-label{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}.learn-prompt{font-size:12px;padding:14px 16px;background:#f5f0e4;border-left:3px solid #cda76a;border-radius:0 6px 6px 0;margin-top:16px;color:#67522f}.learn-prompt strong{color:#4d3a1d}.readout-line{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}.readout-line strong{color:var(--ink)}details{margin-top:16px;padding:16px 21px;background:#ffffffb0;border:1px solid var(--line);border-radius:10px}summary{cursor:pointer;font-size:12px;font-weight:650;list-style-position:outside;margin-left:12px}details p{font-size:12px;color:var(--muted);margin:10px 0}details .eq{padding:6px 0}.reference-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:13px}.reference-grid h3{font-size:12px}footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:10px;margin-top:22px}.hidden,[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.range-value-input{width:78px;border:1px solid var(--line);color:var(--teal);font-weight:700;font-size:12px;padding:3px 4px;border-radius:4px;text-align:right}.fine{font-size:11px}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;border-radius:8px;padding:10px 18px;font-size:13px;box-shadow:0 4px 24px #0003;z-index:10}.tip-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding:2px 20px 0}.chartsvg{cursor:crosshair}.svg-label{fill:var(--muted);font-size:10px}
+@media(min-width:1200px){.chart-card{padding:19px 23px 15px}.reactor-figure{margin:0 24px}}
+@media(max-width:1050px){.page{padding:24px 20px}.layout{grid-template-columns:225px minmax(0,1fr);gap:16px}.intro{align-items:flex-start}.reaction{font-size:18px;padding:11px 14px}.metric{padding:13px 12px}.metric strong{font-size:21px}.chart-card{padding:16px 14px 12px}.chart-heading h2{font-size:13px}.step{font-size:12px;gap:6px}.eq math{font-size:18px}.equation-pair{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(2){border:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media(max-width:800px){header .bar{padding:13px 18px}.page{padding:20px 16px}.intro{display:block}.reaction{display:inline-block;margin-top:16px}h1{font-size:31px}.layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:17px}.sidebar .control{margin:0}.sidebar .model-control{grid-column:1/-1}.sidebar .hairline,.sidebar .assumption-block{display:none}.sidebar .control:nth-of-type(4){grid-column:1/-1}.charts{gap:12px}.top-actions #reset{display:none}.intro p{font-size:13px}.step{padding:11px 4px}.context-line{min-height:0;margin-bottom:8px}.brand span{font-size:10px}.reference-grid{grid-template-columns:1fr}.main{min-width:0}}
+@media(max-width:520px){.charts{grid-template-columns:1fr}.card-head{padding:17px 16px 0}.context-line{margin:7px 16px 0}.reactor-figure{margin:0 1px}.reactor-figure svg{min-height:176px}.scrubber{padding:13px 14px;gap:10px}.scrubber button{min-width:76px;padding:9px 10px;font-size:12px}.steps{gap:5px}.step{font-size:11px;gap:5px}.step .num{width:20px;height:20px}.steady{font-size:9px}.legend{gap:12px;font-size:10px}.metric strong{font-size:23px}.equation-panel{padding:18px 15px}.balance-strip{grid-template-columns:1fr 12px 1fr 12px 1fr 12px 1fr;padding:12px 4px}.balance-strip strong{font-size:14px}.balance-strip label{font-size:9px}.shell-info{grid-template-columns:1fr}.shell-info>div{display:flex;align-items:center;justify-content:space-between}.brand strong{font-size:12px}.top-actions button{font-size:11px;padding:7px 9px}.reaction{font-size:19px}.eq math{font-size:17px}.eq.small math{font-size:15px}.play-note{font-size:9px}.profile-table{font-size:11px}.chart-card svg{max-height:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{header,.sidebar,.steps,.scrubber,.top-actions,.micro-toggle{display:none!important}.page{padding:0}.layout{display:block}.panel{box-shadow:none;break-inside:avoid}.main{width:100%}.charts{grid-template-columns:1fr 1fr}.intro{margin-top:20px}.equation-panel{break-inside:avoid}details{break-inside:avoid}body{background:white}}
+</style>
+</head>
+<body>
+<header><div class="bar"><div class="brand"><div class="mark" aria-hidden="true"><svg width="25" height="25" viewBox="0 0 28 28"><path d="M5 8h17M5 20h17M5 8a3 6 0 0 0 0 12M22 8a3 6 0 0 1 0 12M13 8v12" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 14h11m-3-3 3 3-3 3" fill="none" stroke="#8cdbca" stroke-width="1.5"/></svg></div><div><strong>CBE 140 · Reactor Explorer</strong><span>Mass and energy balances</span></div></div><div class="top-actions"><button id="reset" type="button">Reset</button><button id="download" type="button">↓ Download HTML</button></div></div></header>
+<div class="page">
+<div class="intro"><div><div class="eyebrow">From a local balance to a reactor design</div><h1>Inside a plug-flow reactor</h1><p>Follow one fluid plug. Balance one thin shell. Add the shells to find the reactor volume.</p></div><div class="reaction" id="reaction">N<sub>2</sub> + 3 H<sub>2</sub> ⇌ 2 NH<sub>3</sub></div></div>
+<div class="layout">
+<aside class="panel sidebar" aria-label="Model and reactor controls">
+<div class="control model-control"><h2>Set the reactor</h2><label for="model">Rate-law example</label><select id="model"><option value="ammonia">Ammonia · course correlation</option><option value="first">A → B · first-order illustration</option></select><p class="hint" id="modelHint"></p><span class="model-badge" id="modelBadge"></span></div>
+<div class="control"><div class="control-head"><label for="volume">Total volume <i>V</i><sub>R,out</sub></label><span><input id="volumeNumber" class="range-value-input" type="number" min="0.001" max="1" step="0.001" aria-label="Total reactor volume in cubic feet"> <span class="unit fine">ft³</span></span></div><input id="volume" type="range" min="-3" max="0" step="0.001" value="-0.998942"><div class="end-labels"><span>0.001 ft³</span><span id="volumeMaxLabel">1 ft³ · log scale</span></div><p class="hint">Increase volume to give the feed more opportunity to react.</p></div>
+<div class="control" id="feedControl"><div class="control-head"><label for="feed">Inlet N₂ flow <i>B</i></label><span class="value" id="feedValue"></span></div><input id="feed" type="range" min="0.5" max="3" step="0.05" value="1"><div class="end-labels"><span>0.5 lbmol/h</span><span>3 lbmol/h</span></div><p class="hint">H₂ enters at 3<i>B</i>. NH₃ inlet flow is zero.</p></div>
+<div class="control hidden" id="firstControl"><div class="control-head"><label for="k">Rate constant <i>k</i></label><span class="value" id="kValue"></span></div><input id="k" type="range" min="0.2" max="5" step="0.1" value="1"><div class="end-labels"><span>0.2 h⁻¹</span><span>5 h⁻¹</span></div><p class="hint">Fixed inlet flow: 1 ft³/h, containing 1 lbmol A/h.</p></div>
+<div class="hairline"></div><div class="assumption-block"><h3>Model assumptions</h3><ul class="assumptions"><li>Steady state: no accumulation in a fixed shell.</li><li>Uniform composition across each cross-section.</li><li>Negligible axial mixing; one reaction.</li><li>Rate and reactor volume use the same basis.</li><li id="specificAssumption"></li></ul><p class="hint" id="bedHint"></p></div>
+</aside>
+<main class="main">
+<div class="steps" role="tablist" aria-label="Explore the PFR"><button class="step" id="tab-plug" type="button" role="tab" aria-selected="true" aria-controls="lesson" data-mode="plug"><span class="num">1</span>Follow a plug</button><button class="step" id="tab-shell" type="button" role="tab" aria-selected="false" aria-controls="lesson" data-mode="shell" tabindex="-1"><span class="num">2</span>Balance a shell</button><button class="step" id="tab-integral" type="button" role="tab" aria-selected="false" aria-controls="lesson" data-mode="integral" tabindex="-1"><span class="num">3</span>Build the integral</button></div>
+<section class="panel reactor-card" aria-label="Animated reactor and local readouts"><div class="card-head"><h2 id="reactorTitle">A moving plug, a steady profile</h2><span class="steady">Steady-state operation</span></div><p class="context-line" id="context"></p><figure class="reactor-figure"><svg id="reactor" viewBox="0 0 920 260" role="img" aria-label="Cylindrical plug-flow reactor with a steady composition profile, a selected control-volume shell, and a moving fluid plug"></svg></figure><div class="legend" id="reactorLegend"></div><div class="scrubber"><button id="play" type="button" class="primary" aria-label="Animate the fluid plug">▶ Follow plug</button><div class="position-control"><div class="position-label"><label for="position">Position along the reactor</label><output for="position" id="positionValue"></output></div><input id="position" type="range" min="0" max="1000" step="1" value="450"><div class="play-note">Playback is scaled. The displayed plug age uses the local fluid speed.</div></div></div><div class="metrics"><div class="metric"><span id="conversionLabel">Local N₂ conversion <i>X</i></span><strong id="localX"></strong><small id="conversionDetail"></small></div><div class="metric"><span>Volume from inlet <i>V</i><sub>R</sub>(<i>z</i>)</span><strong id="localV" class="smallval"></strong><small id="positionDetail"></small></div><div class="metric"><span>Positive disappearance rate <i>q</i></span><strong id="localRate" class="smallval"></strong><small>lbmol / (ft³ · h)</small></div><div class="metric"><span>Fluid-plug age <i>t</i></span><strong id="plugAge"></strong><small id="ageDetail"></small></div></div></section>
+<div class="charts"><section class="panel chart-card" aria-label="Concentration profiles"><div class="chart-heading"><h2>Concentrations along the reactor</h2><button id="profileToggle" class="micro-toggle" type="button" aria-label="Switch the plot between concentration and conversion">Show conversion</button></div><svg id="profile" class="chartsvg" viewBox="0 0 450 250" role="img" aria-label="Species concentration versus fractional axial position; select a position by clicking"></svg><p class="chart-footer" id="profileCaption"></p><div class="chart-totals"><span>Outlet conversion</span><strong id="outletX"></strong></div></section><section class="panel chart-card" aria-label="PFR design integral"><div class="chart-heading"><h2>The volume is the shaded area</h2><button id="rectToggle" class="micro-toggle" type="button" aria-pressed="false">Show shell sum</button></div><svg id="integral" class="chartsvg" viewBox="0 0 450 250" role="img" aria-label="Inlet reactant flow divided by disappearance rate versus conversion; area under this curve is reactor volume"></svg><p class="chart-footer" id="integralCaption"></p><div class="chart-totals"><span id="areaLabel">Area from 0 to the selected X</span><strong id="integralArea"></strong></div></section></div>
+<section class="panel equation-panel" id="lesson" role="tabpanel" aria-labelledby="tab-plug"><div class="section-label"><span class="number" id="lessonNumber">1</span><h2 id="lessonTitle"></h2></div><div id="lessonContent"></div></section>
+<details id="modelDetails"><summary>The rate law, volume basis, and numerical method</summary><div id="modelDetailsContent"></div></details>
+<details><summary>Three short explorations</summary><p><strong>1. Flow and conversion.</strong> Hold the reactor volume fixed. In the ammonia example, double the inlet N₂ flow. Predict how the outlet conversion and concentration profiles will change, then test your prediction.</p><p><strong>2. From a shell to a derivative.</strong> Select “Balance a shell.” Move the selected shell from inlet to outlet. Compare the inlet flow, outlet flow, and signed generation term. Why is the accumulation always zero?</p><p><strong>3. Adding volume.</strong> Select “Build the integral” and show the shell sum. Move toward the outlet. Why do the last conversion increments require more volume as the rate falls? Compare with the first-order example.</p></details>
+</main></div><footer><span>Aligned with CBE 140, Chapter 4: Plug-Flow Reactors and Integrated Reaction Processes.</span><span>Runs offline · No external libraries · Illustrative course models</span></footer>
+</div><div id="toast" class="toast hidden" role="status"></div>
+<noscript><p style="padding:24px">Enable JavaScript to use the interactive simulator.</p></noscript>
+<script>
+"use strict";
+(() => {
+const $ = id => document.getElementById(id);
+const C = {N:'#384f83',H:'#678bad',M:'#087f7b',orange:'#ce691d',ink:'#19383e',muted:'#597076',grid:'#e5ece7'};
+const CONST = Object.freeze({k1:1.20,b:0.00140,Khalf:4.67e-3,P:300,TK:(900-32)*5/9+273.15,TR:900+459.67,R:0.7302413,epsilon:0.4});
+const KP = CONST.Khalf*CONST.P;
+const seq = (1+3*Math.sqrt(3)*KP/4)**(-0.5);
+const Xeq = 1-seq;
+const QperB = 4*CONST.R*CONST.TR/CONST.P;
+const maxU=20, du=0.0005, nU=Math.round(maxU/du);
+const SHELL_COUNT=256;
+const state={model:'ammonia',mode:'plug',V:0.100244,B:1,k:1,pos:.45,shellAnchor:.45,rects:false,conversionPlot:false,playing:false};
+let solution, frameId=0,lastFrame=0,ageFraction=0,toastTimer;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const superscript=s=>String(s).replace(/[-+0-9]/g,c=>({'-':'⁻','+':'⁺','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'}[c]));
+function num(x,d=3){if(!Number.isFinite(x))return '∞';if(x===0)return '0';if(Math.abs(x)<.001||Math.abs(x)>=10000){const [a,b]=x.toExponential(2).split('e');return a+' × 10'+superscript(Number(b));}return Number(x.toPrecision(d)).toLocaleString('en-US',{maximumFractionDigits:7});}
+const pct=x=>(100*x).toFixed(x>.99995?5:x>.9995?3:1)+'%';
+const math=s=>'<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">'+s+'</math>';
+const mi=s=>'<mi>'+s+'</mi>', mn=s=>'<mn>'+s+'</mn>',mo=s=>'<mo>'+s+'</mo>', mt=s=>'<mtext>'+s+'</mtext>';
+const row=s=>'<mrow>'+s+'</mrow>',frac=(a,b)=>'<mfrac>'+row(a)+row(b)+'</mfrac>',sub=(a,b)=>'<msub>'+a+row(b)+'</msub>',sup=(a,b)=>'<msup>'+a+row(b)+'</msup>';
+const Vsym=sub(mi('V'),mt('R')), Xsym=mi('X'), Bsym=mi('B'), qsym=mi('q');
+function integralMath(upper=Xsym){return '<msubsup><mo>∫</mo><mn>0</mn>'+row(upper)+'</msubsup>';}
+function yAt(x){const D=4-2*x;return [(1-x)/D,3*(1-x)/D,2*x/D];}
+// Factor the equilibrium numerator to retain precision as X approaches Xeq.
+// delta = Xeq-X = Xeq*exp(-u), and q/delta stays finite at equilibrium.
+function qOverDelta(u){
+ const delta=Xeq*Math.exp(-u),s=seq+delta,x=Xeq-delta,D=2-x,y=yAt(x);
+ const factor=(3*Math.sqrt(3)/4+1/KP)*(2*seq+delta);
+ const second=3*Math.sqrt(3)/4*s*s+(1-s*s)/KP;
+ return CONST.k1*factor*second/(D**4*(y[2]*Math.sqrt(y[1])+CONST.b*y[1]*y[1])**1.5);
+}
+function ammoniaRate(x){
+ const d=Math.max(0,Xeq-x);
+ if(d===0)return 0;
+ return qOverDelta(Math.log(Xeq/d))*d;
+}
+// Shared quadrature table: J = integral dX/q, and ideal void-volume age.
+const JTable=new Float64Array(nU+1), TTable=new Float64Array(nU+1);
+function jDerivative(u){return 1/qOverDelta(u);}
+function tDerivative(u){const x=Xeq*(-Math.expm1(-u));return CONST.epsilon*jDerivative(u)/(QperB*(1-x/2));}
+for(let i=1;i<=nU;i++){
+ const a=(i-1)*du,b=i*du,m=(a+b)/2;
+ JTable[i]=JTable[i-1]+du/6*(jDerivative(a)+4*jDerivative(m)+jDerivative(b));
+ TTable[i]=TTable[i-1]+du/6*(tDerivative(a)+4*tDerivative(m)+tDerivative(b));
+}
+const JPrime=Float64Array.from({length:nU+1},(_,i)=>jDerivative(i*du));
+const TPrime=Float64Array.from({length:nU+1},(_,i)=>tDerivative(i*du));
+function cubic(table,i,t){const deriv=table===JTable?JPrime:TPrime,t2=t*t,t3=t2*t;return (2*t3-3*t2+1)*table[i]+(t3-2*t2+t)*du*deriv[i]+(-2*t3+3*t2)*table[i+1]+(t3-t2)*du*deriv[i+1];}
+function atU(table,u){const f=clamp(u/du,0,nU),i=Math.min(nU-1,Math.floor(f));return cubic(table,i,f-i);}
+function inverse(table,target){
+ let lo=0,hi=nU;while(hi-lo>1){const mid=(lo+hi)>>1;if(table[mid]<target)lo=mid;else hi=mid;}
+ let t=clamp((target-table[lo])/(table[hi]-table[lo]),0,1);const d=table===JTable?JPrime:TPrime;
+ for(let k=0;k<3;k++){const derivative=(6*t*t-6*t)*table[lo]+(3*t*t-4*t+1)*du*d[lo]+(-6*t*t+6*t)*table[hi]+(3*t*t-2*t)*du*d[hi];t=clamp(t-(cubic(table,lo,t)-target)/derivative,0,1);}
+ return (lo+t)*du;
+}
+function makeSolution(p){
+ const ammonia=p.model==='ammonia';
+ const B=ammonia?p.B:1, Q0=ammonia?QperB*B:1;
+ function atVolume(V){
+  V=clamp(V,0,p.V);
+  if(ammonia){const u=inverse(JTable,V/B),delta=Xeq*Math.exp(-u),x=Xeq*(-Math.expm1(-u)),y=yAt(x),Q=Q0*(1-x/2),F=[B*(1-x),3*B*(1-x),2*B*x],ct=CONST.P/(CONST.R*CONST.TR);
+   return {V,x,u,q:qOverDelta(u)*delta,Q,F,y,c:y.map(a=>a*ct),age:atU(TTable,u)*3600};}
+  const x=-Math.expm1(-p.k*V/Q0),F=[B*(1-x),B*x];
+  return {V,x,q:p.k*B*(1-x)/Q0,Q:Q0,F,y:[1-x,x],c:F.map(f=>f/Q0),age:V/Q0*3600};
+ }
+ const out=atVolume(p.V);
+ function atFraction(f){return atVolume(p.V*clamp(f,0,1));}
+ function atAgeFraction(f){if(ammonia){const u=inverse(TTable,f*out.age/3600);return atVolume(Math.min(p.V,B*atU(JTable,u)));}return atFraction(f);}
+ function rate(x){return ammonia?ammoniaRate(x):p.k*B*(1-x)/Q0;}
+ function volumeForX(x){if(ammonia)return B*atU(JTable,Math.log(Xeq/(Xeq-x)));return -Q0/p.k*Math.log1p(-x);}
+ return {ammonia,B,Q0,out,atVolume,atFraction,atAgeFraction,rate,volumeForX,names:ammonia?['N₂','H₂','NH₃']:['A','B'],colors:ammonia?[C.N,C.H,C.M]:[C.N,C.M],tau:p.V/Q0*3600};
+}
+function sampleProfile(){
+ // Combine uniform spatial points with inlet-clustered points.
+ const positions=new Set([0,1]);for(let i=1;i<160;i++){positions.add(i/160);positions.add((i/160)**4);}
+ return [...positions].sort((a,b)=>a-b).map(f=>({...solution.atFraction(f),f}));
+}
+function selectedShell(){const index=Math.min(SHELL_COUNT-1,Math.floor(state.shellAnchor*SHELL_COUNT));const left=solution.atFraction(index/SHELL_COUNT),right=solution.atFraction((index+1)/SHELL_COUNT),mid=solution.atFraction((index+.5)/SHELL_COUNT);return {index,left,right,mid,dV:state.V/SHELL_COUNT};}
+function riemannSum(toV){
+ const ends=[];const dv=state.V/SHELL_COUNT;
+ for(let j=0;j<SHELL_COUNT&&j*dv<toV-1e-16;j++){
+  const a=solution.atVolume(j*dv),b=solution.atVolume(Math.min((j+1)*dv,toV));
+  const xm=(a.x+b.x)/2,h=solution.B/solution.rate(xm);
+  ends.push({a:a.x,b:b.x,height:h,area:h*(b.x-a.x)});
+ }
+ return {rects:ends,sum:ends.reduce((s,a)=>s+a.area,0)};
+}
+const line=(a,b,color,width=1,dash='')=>'<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+color+'" stroke-width="'+width+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>';
+const text=(x,y,s,opts='')=>'<text x="'+x+'" y="'+y+'" fill="'+C.muted+'" font-size="10" '+opts+'>'+esc(s)+'</text>';
+function path(points){return points.map((a,i)=>(i?'L':'M')+a[0].toFixed(3)+','+a[1].toFixed(3)).join(' ');}
+function reactorSVG(local,sh){
+ const x0=138,x1=780,w=x1-x0,top=73,bottom=177,cy=125,ry=52,rx=17;
+ const pos=x0+state.pos*w,a=x0+sh.index/SHELL_COUNT*w,b=x0+(sh.index+1)/SHELL_COUNT*w;
+ let s='<defs><linearGradient id="tubeLight" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".43"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#19383e" stop-opacity=".07"/></linearGradient><clipPath id="tubeClip"><path d="M138 73H780A17 52 0 0 1 780 177H138A17 52 0 0 1 138 73Z"/></clipPath><marker id="flowArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#597076"/></marker><marker id="dimArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#087f7b"/></marker></defs>';
+ s+='<defs><linearGradient id="composition" x1="0%" y1="0%" x2="100%" y2="0%">';
+ for(let i=0;i<=100;i++){const f=(i/100)**3,p=solution.atFraction(f),yP=p.y[p.y.length-1],alpha=.07+.65*yP,color=[8,127,123].map(c=>Math.round(255*(1-alpha)+c*alpha));s+='<stop offset="'+(f*100)+'%" stop-color="rgb('+color.join(',')+')"/>';}
+ s+='</linearGradient></defs><g clip-path="url(#tubeClip)"><rect x="138" y="73" width="642" height="104" fill="url(#composition)"/>';
+ if(state.mode!=='plug'){
+  const gridN=Math.min(64,SHELL_COUNT);for(let i=1;i<gridN;i++)s+=line([x0+i/gridN*w,top],[x0+i/gridN*w,bottom],'#d4e5df');
+ }
+ s+='<rect x="138" y="73" width="642" height="104" fill="url(#tubeLight)"/>';
+ if(state.mode==='integral')s+='<rect x="138" y="73" width="'+(state.pos*w)+'" height="104" fill="#087f7b" opacity=".09"/>';
+ if(state.mode!=='plug')s+='<rect x="'+a+'" y="73" width="'+Math.max(.7,b-a)+'" height="104" fill="#087f7b" opacity=".2"/>';
+ for(let i=0;i<7;i++){const xx=x0+50+i*86;s+='<path d="M'+xx+' 125h23m-5-4 5 4-5 4" fill="none" stroke="#3e777a" stroke-width="1.1" opacity=".43"/>';}
+ s+='</g><path d="M138 73H780M138 177H780" fill="none" stroke="#5f8484" stroke-width="1.6"/><ellipse cx="138" cy="125" rx="17" ry="52" fill="#f6faf8" fill-opacity=".2" stroke="#5f8484" stroke-width="1.4"/><ellipse cx="780" cy="125" rx="17" ry="52" fill="#087f7b" fill-opacity=".06" stroke="#5f8484" stroke-width="1.4"/>';
+ if(state.mode!=='plug'){
+  s+=line([a,58],[a,195],C.M,1.2,'4 3')+line([b,58],[b,195],C.M,1.2,'4 3');
+  s+=text((a+b)/2,47,'Fixed shell '+(sh.index+1), 'text-anchor="middle" style="fill:#087f7b;font-weight:650"');
+  if(b-a>12)s+='<line x1="'+a+'" x2="'+b+'" y1="203" y2="203" stroke="#087f7b" marker-start="url(#dimArrow)" marker-end="url(#dimArrow)"/>';
+  s+=text((a+b)/2,220,'ΔV_R = A_cs Δz','text-anchor="middle" style="fill:#087f7b"');
+ }
+ const plugWidth=13*local.Q/solution.Q0;
+ s+='<rect x="'+(pos-plugWidth/2)+'" y="73" width="'+plugWidth+'" height="104" rx="2" fill="#fbe1b4" fill-opacity=".56" stroke="'+C.orange+'" stroke-width="1.6"/><ellipse cx="'+(pos+plugWidth/2)+'" cy="125" rx="4" ry="52" fill="none" stroke="'+C.orange+'" stroke-width="1.2"/>';
+ s+=line([pos,73],[pos,29],C.orange,1)+text(clamp(pos,180,730),20,'Fluid plug · X = '+pct(local.x),'text-anchor="middle" style="fill:#b55718;font-weight:650"');
+ s+='<path d="M91 125H118" stroke="#597076" stroke-width="1.3" marker-end="url(#flowArrow)"/><path d="M801 125H829" stroke="#597076" stroke-width="1.3" marker-end="url(#flowArrow)"/>';
+ s+=text(120,55,'INLET','text-anchor="end" style="font-size:10px;letter-spacing:1px;font-weight:650"')+text(809,55,'OUTLET','style="font-size:10px;letter-spacing:1px;font-weight:650"');
+ const inlet=solution.atFraction(0);solution.names.forEach((name,i)=>{s+=text(16,97+i*21,name+'  '+num(inlet.F[i]),'style="fill:'+solution.colors[i]+';font-size:11px;font-weight:600"');s+=text(832,97+i*21,name+'  '+num(solution.out.F[i]),'style="fill:'+solution.colors[i]+';font-size:11px;font-weight:600"');});
+ s+=text(16,177,'lbmol/h')+text(832,177,'lbmol/h');
+ s+=line([x0,240],[x1,240],'#9eb4b1')+line([x0,236],[x0,244],'#9eb4b1')+line([x1,236],[x1,244],'#9eb4b1');
+ s+=text(x0,255,'z / L = 0')+text(x1,255,'z / L = 1','text-anchor="end"')+text((x0+x1)/2,255,'Flow →','text-anchor="middle"');
+ return s;
+}
+function axes({xmax,ymax,xLabel,yLabel,xPercent=false}){
+ const L=53,R=434,T=30,B=204,W=R-L,H=B-T;let s='';
+ const xx=x=>L+W*x/xmax,yy=y=>B-H*y/ymax;
+ for(let i=0;i<=4;i++){const val=ymax*i/4,y=yy(val);s+=line([L,y],[R,y],C.grid)+text(L-8,y+3,num(val,2),'text-anchor="end"');}
+ for(let i=0;i<=4;i++){const val=xmax*i/4,x=xx(val);s+=line([x,B],[x,B+4],'#90a8a5')+text(x,B+17,xPercent?num(val*100,3)+'%':num(val,2),'text-anchor="middle"');}
+ s+=line([L,T],[L,B],'#90a8a5')+line([L,B],[R,B],'#90a8a5')+text(L,T-12,yLabel,'style="font-size:10px;fill:#19383e"')+text((L+R)/2,247,xLabel,'text-anchor="middle"');
+ return {s,xx,yy,L,R,T,B,W,H};
+}
+function profileSVG(local,sh){
+ const data=sampleProfile();const conv=state.conversionPlot;
+ const ymax=conv?(solution.ammonia?Xeq*1.12:1):Math.max(...solution.atFraction(0).c,...solution.out.c)*1.15;
+ const ax=axes({xmax:1,ymax,xLabel:'Position z / L = V_R / V_R,out',yLabel:conv?'Conversion X':'Concentration cᵢ (lbmol/ft³)'});let s=ax.s;
+ if(state.mode==='shell')s+='<rect x="'+ax.xx(sh.index/SHELL_COUNT)+'" y="30" width="'+(ax.W/SHELL_COUNT)+'" height="174" fill="#087f7b" opacity=".1"/>';
+ if(conv){
+  if(solution.ammonia)s+=line([ax.L,ax.yy(Xeq)],[ax.R,ax.yy(Xeq)],'#8d9b96',1,'4 3')+text(ax.R-3,ax.yy(Xeq)-5,'Xeq = '+pct(Xeq),'text-anchor="end"');
+  s+='<path d="'+path(data.map(a=>[ax.xx(a.f),ax.yy(a.x)]))+'" fill="none" stroke="'+C.M+'" stroke-width="2.5"/>';
+  s+='<circle cx="'+ax.xx(state.pos)+'" cy="'+ax.yy(local.x)+'" r="4" fill="'+C.orange+'" stroke="#fff" stroke-width="1.5"/>';
+  if(state.mode==='shell')s+=line([ax.xx(sh.index/SHELL_COUNT),ax.yy(sh.left.x)],[ax.xx((sh.index+1)/SHELL_COUNT),ax.yy(sh.right.x)],C.orange,3);
+ }else{
+  solution.names.forEach((name,i)=>{
+   s+='<path d="'+path(data.map(a=>[ax.xx(a.f),ax.yy(a.c[i])]))+'" fill="none" stroke="'+solution.colors[i]+'" stroke-width="2.3"'+(i===1&&solution.ammonia?' stroke-dasharray="6 3"':'')+'/>';
+   s+='<circle cx="'+ax.xx(state.pos)+'" cy="'+ax.yy(local.c[i])+'" r="3.5" fill="'+solution.colors[i]+'" stroke="#fff" stroke-width="1.2"/>';
+  });
+ }
+ s+=line([ax.xx(state.pos),30],[ax.xx(state.pos),204],C.orange,1.1,'4 3');
+ if(conv)s+=text(ax.R,14,'Selected X = '+pct(local.x),'text-anchor="end" style="fill:#b55718"');
+ return s;
+}
+function integralSVG(local){
+ const xMax=solution.ammonia?Xeq:Math.min(1,Math.max(.8,solution.out.x+.1*(1-solution.out.x)));
+ const outG=solution.B/solution.out.q, ymax=Math.max(outG*1.32,solution.B/solution.rate(0)*2);
+ const ax=axes({xmax:xMax,ymax,xLabel:'Conversion X',yLabel:'B / q(X) (ft³)',xPercent:true});
+ let s='<defs><clipPath id="intClip"><rect x="53" y="30" width="381" height="174"/></clipPath></defs>'+ax.s;
+ const xs=[];for(let i=0;i<=350;i++)xs.push(xMax*i/350);xs.push(local.x,solution.out.x);xs.sort((a,b)=>a-b);
+ const g=x=>solution.B/Math.max(1e-300,solution.rate(x));
+ const coords=xs.map(x=>[ax.xx(x),Math.max(-2000,ax.yy(g(x)))]);
+ function areaTo(to){const ar=xs.filter(x=>x<to).concat([to]);return 'M'+ax.L+',204 '+ar.map(x=>'L'+ax.xx(x).toFixed(3)+','+Math.max(-2000,ax.yy(g(x))).toFixed(3)).join(' ')+' L'+ax.xx(to).toFixed(3)+',204 Z';}
+ s+='<g clip-path="url(#intClip)"><path d="'+areaTo(solution.out.x)+'" fill="#e8f1ee"/><path d="'+areaTo(local.x)+'" fill="#96cec0" fill-opacity=".65"/>';
+ if(state.rects){const rr=riemannSum(local.V);for(const r of rr.rects){const x=ax.xx(r.a),w=ax.xx(r.b)-x,y=Math.max(-2000,ax.yy(r.height));s+='<rect x="'+x+'" y="'+y+'" width="'+Math.max(.03,w)+'" height="'+(204-y)+'" fill="#e5ad66" fill-opacity=".35" stroke="#bf691e" stroke-opacity=".72" stroke-width=".65"/>';}}
+ s+='<path d="'+path(coords)+'" fill="none" stroke="'+C.M+'" stroke-width="2.3"/>';
+ s+=line([ax.xx(local.x),30],[ax.xx(local.x),204],C.orange,1.1,'4 3');
+ s+='<circle cx="'+ax.xx(local.x)+'" cy="'+ax.yy(g(local.x))+'" r="3.5" fill="'+C.orange+'" stroke="#fff" stroke-width="1.2"/></g>';
+ if(solution.ammonia){s+=line([ax.xx(Xeq)-1,30],[ax.xx(Xeq)-1,204],'#8d9b96',1,'3 3');s+=text(ax.R-4,25,'Xeq: rate → 0','text-anchor="end"');}
+ s+=text(ax.xx(solution.out.x)-4,195,'outlet','text-anchor="end" style="font-size:9px"');
+ return s;
+}
+function rateMath(){
+ if(!solution.ammonia)return math(mo('−')+sub(mi('r'),mt('A'))+mo('=')+mi('k')+sub(mi('c'),mt('A'))+mo('=')+frac(mi('k')+Bsym+mo('(')+mn('1')+mo('−')+Xsym+mo(')'),sub(mi('V̇'),mn('0'))));
+ const yn=sub(mi('y'),mt('N₂')),yh=sub(mi('y'),mt('H₂')),ym=sub(mi('y'),mt('NH₃'));
+ return math(qsym+mo('=')+sub(mi('k'),mn('1'))+frac(yn+sup(yh,mn('3'))+mo('−')+frac(sup(ym,mn('2')),sup(row(mo('(')+sub(mi('K°'),mt('half'))+mi('P̂')+mo(')')),mn('2'))),sup(row(mo('[')+ym+sup(yh,frac(mn('1'),mn('2')))+mo('+')+sub(mi('b'),mt('kin'))+sup(yh,mn('2'))+mo(']')),frac(mn('3'),mn('2')))));
+}
+function renderDetails(){
+ const ammonia=solution.ammonia;
+ $('modelDetailsContent').innerHTML=(ammonia?'<p><strong>Ammonia synthesis.</strong> N₂ + 3 H₂ ⇌ 2 NH₃. The inlet is '+num(state.B)+' lbmol N₂/h and '+num(3*state.B)+' lbmol H₂/h, with no ammonia or inert. The supplied course correlation uses ideal-gas mole fractions at 300 atm and 900 °F (755.37 K).</p>':'<p><strong>First-order illustration.</strong> A → B is an irreversible illustrative reaction. The empty tube has constant volumetric flow V̇₀ = 1 ft³/h, inlet reactant flow B = 1 lbmol/h, and constant temperature. This model follows the first-order comparison in the notes.</p>')+'<div class="eq small">'+rateMath()+'</div>'+(ammonia?'<p>k₁ = 1.20 lbmol/(ft³·h), b<sub>kin</sub> = 0.00140, K°<sub>half</sub> = 4.67 × 10⁻³, P̂ = P/P° = 300, and P° = 1 atm for this correlation. The coefficients remain fixed at these conditions.</p><div class="eq small">'+math(sub(mi('y'),mt('N₂'))+mo('=')+frac(mn('1')+mo('−')+Xsym,mn('4')+mo('−')+mn('2')+Xsym)+mo(',')+sub(mi('y'),mt('H₂'))+mo('=')+frac(mn('3')+mo('(')+mn('1')+mo('−')+Xsym+mo(')'),mn('4')+mo('−')+mn('2')+Xsym)+mo(',')+sub(mi('y'),mt('NH₃'))+mo('=')+frac(mn('2')+Xsym,mn('4')+mo('−')+mn('2')+Xsym))+'</div><p><strong>Concentrations and flow.</strong> cᵢ = yᵢP/(RT), V̇/V̇₀ = 1 − X/2. With R = 0.7302413 ft³·atm/(lbmol·°R), the gas concentration is '+num(CONST.P/(CONST.R*CONST.TR),5)+' lbmol/ft³. A fixed-shell balance uses d(ṅᵢ)/dV_R; variable gas flow is retained.</p><p><strong>Bed volume and plug age.</strong> V_R includes solid packing and interpellet voids; q is per unit of that same total bed volume. For the travel animation only, assume a uniform accessible void fraction ε = 0.40, no extra retention, and interstitial speed v = V̇/(εA_cs). Then t(z) = ∫₀ᵛ ε dV_R/V̇(V_R). Changing ε would change transit time; the supplied bed-volume rate law already fixes conversion versus bed volume.</p><p><strong>Equilibrium.</strong> X<sub>eq</sub> = '+pct(Xeq)+'. This is the zero of the reversible rate. It is approached asymptotically as reactor volume increases. The model is an illustrative high-pressure ideal-gas calculation; pressure drop, nonideal activities, heat balances, and pellet transport are outside this model.</p>':'<p><strong>Analytical solution.</strong> X = 1 − exp(−kV_R/V̇₀), with k = '+num(state.k)+' h⁻¹. Concentrations are c<sub>A</sub> = B(1 − X)/V̇₀ and c<sub>B</sub> = BX/V̇₀. The space time τ = V_R/V̇₀ equals the ideal transit time for this empty constant-flow tube.</p>')+'<p><strong>Numerics.</strong> The ammonia profile uses Simpson quadrature of B∫dX/q and inversion of the resulting monotone volume curve. A transformed integration coordinate resolves the inlet and equilibrium limit. The first-order profile uses its analytical solution. Orange rectangles use midpoint values of B/q in conversion intervals corresponding to equal-volume spatial shells; the last selected interval may be partial. The shell illustration and midpoint sum use a fixed partition of 256 equal-volume shells. The smooth profile follows the continuous design equation.</p><p><strong>Source.</strong> CBE 140 course package supplied October 19, 2026; Chapter 4, “A shell balance and the PFR design equation,” “Gas stoichiometry and the equilibrium limit,” and “A realistic ammonia rate law and numerical sizing.” The chapter’s B = 1 lbmol/h targets are V_R = 0.025295, 0.100244, and 0.676933 ft³ at X = 0.20, 0.30, and 0.40.</p>';
+}
+function flowTable(local){
+ const init=solution.atFraction(0);
+ let s='<table class="profile-table"><thead><tr><th>Species</th><th>Inlet ṅᵢ<br>(lbmol/h)</th><th>Here ṅᵢ<br>(lbmol/h)</th><th>Here cᵢ<br>(lbmol/ft³)</th></tr></thead><tbody>';
+ solution.names.forEach((name,i)=>s+='<tr><td><span class="dot-label" style="background:'+solution.colors[i]+'"></span>'+name+'</td><td>'+num(init.F[i],4)+'</td><td>'+num(local.F[i],4)+'</td><td>'+num(local.c[i],4)+'</td></tr>');
+ s+='</tbody></table>';return s;
+}
+function renderLesson(local,sh){
+ const rn=solution.ammonia?'N₂':'A';const rsub=sub(mi('r'),mt(rn));
+ const deriv=math(frac(mi('d')+Xsym,mi('d')+Vsym)+mo('=')+frac(mo('−')+rsub,Bsym)+mo('=')+frac(qsym,Bsym)+mo(',')+mi('X')+mo('(')+mn('0')+mo(')')+mo('=')+mn('0'));
+ const integ=math(Vsym+mo('=')+Bsym+integralMath()+frac(mi('d')+mi('x'),mi('q')+mo('(')+mi('x')+mo(')')));
+ const gen=sh.right.F[0]-sh.left.F[0],qAvg=-gen/sh.dV,qMid=sh.mid.q,diff=100*(qMid-qAvg)/qAvg;
+ const errText=Math.abs(diff)<.005?'less than 0.005%':Math.abs(diff).toFixed(2)+'%';
+ if(state.mode==='plug'){
+  $('lessonNumber').textContent='1';$('lessonTitle').textContent='Position changes; the steady profile stays fixed';
+  $('lessonContent').innerHTML='<p class="teaching-copy">The orange marker follows a fluid plug. At each position it has the local composition shown below. Another plug arriving at that same position has the same composition. A fixed shell has zero accumulation even though material reacts as it flows through.</p>'+flowTable(local)+'<div class="equation-pair"><div><div class="eq">'+math(mi('X')+mo('=')+frac(Bsym+mo('−')+sub(mi('ṅ'),mt(rn)),Bsym))+'</div><p class="equation-caption">Conversion is the fraction of inlet '+rn+' consumed.</p></div><div><div class="eq">'+deriv+'</div><p class="equation-caption">The local rate sets the slope of conversion versus volume.</p></div></div><div class="inset"><strong>At this position:</strong> dX/dV_R = q/B = '+num(local.q,4)+' / '+num(solution.B)+' = <strong>'+num(local.q/solution.B,4)+' ft⁻³</strong>. Adding a very small volume dV_R changes conversion by approximately (q/B)dV_R.</div><div class="learn-prompt"><strong>Try it.</strong> Move the position slider or follow the plug. Then increase the total volume at fixed inlet flow. Compare the local slope near the inlet and near the outlet.</div>';
+ }else if(state.mode==='shell'){
+  $('lessonNumber').textContent='2';$('lessonTitle').textContent='A shell is a thin, fixed control volume';
+  $('lessonContent').innerHTML='<p class="teaching-copy">Shell '+(sh.index+1)+' of '+SHELL_COUNT+' spans z/L = '+(sh.index/SHELL_COUNT).toFixed(4)+' to '+((sh.index+1)/SHELL_COUNT).toFixed(4)+'. Its full cross-section has area A_cs and its thickness is Δz. The shell stays fixed while fluid enters, reacts, and leaves.</p><div class="eq small">'+math(mn('0')+mo('=')+sub(mi('ṅ'),mt(rn+', in'))+mo('−')+sub(mi('ṅ'),mt(rn+', out'))+mo('+')+'<msub><mo>∫</mo><mtext>shell</mtext></msub>'+rsub+mi('d')+Vsym)+'</div><div class="balance-strip"><div><label>Flow in</label><strong>'+num(sh.left.F[0],5)+'</strong></div><div class="op">−</div><div><label>Flow out</label><strong>'+num(sh.right.F[0],5)+'</strong></div><div class="op">+</div><div><label>Net generation</label><strong class="negative">'+num(gen,4)+'</strong></div><div class="op">=</div><div><label>Accumulation</label><strong>0</strong></div></div><p class="equation-caption">All four balance terms are in lbmol/h. Generation of a consumed reactant is negative. Values are rounded.</p><div class="eq highlight">'+math(frac(sub(mi('ṅ'),mt('out'))+mo('−')+sub(mi('ṅ'),mt('in')),mo('Δ')+Vsym)+mo('=')+mi('r̄')+mo('→')+rsub+mo('=')+frac(mi('d')+mi('ṅ'),mi('d')+Vsym))+'</div><p class="equation-caption">As ΔV_R → 0, the shell-average rate approaches the local rate.</p><div class="shell-info"><div><span>Shell volume ΔV_R (ft³)</span><strong>'+num(sh.dV,4)+'</strong></div><div><span>Average disappearance q̄</span><strong>'+num(qAvg,4)+'</strong></div><div><span>Local q at the shell center</span><strong>'+num(qMid,4)+'</strong></div></div><div class="inset">Both rates have units lbmol/(ft³·h). The center-rate approximation q(V_R,center)ΔV_R differs from the integrated disappearance by <strong>'+errText+'</strong>. For a thin shell, the center rate approximates the shell-average rate. The approximation is less accurate where the rate changes rapidly.</div><div class="eq small">'+deriv+'</div><div class="learn-prompt"><strong>Try it.</strong> Move the selected shell along the reactor. Compare its inlet and outlet flows. Then follow the plug through this fixed shell: reaction continues while accumulation stays zero.</div>';
+ }else{
+  const rr=riemannSum(local.V),err=local.V>0?(rr.sum-local.V)/local.V*100:0;
+  $('lessonNumber').textContent='3';$('lessonTitle').textContent='Adding little volumes gives the design integral';
+  $('lessonContent').innerHTML='<p class="teaching-copy">The differential balance gives dX = (q/B)dV_R. Rearranging gives the volume needed for a small conversion increment: dV_R = (B/q)dX. The local rate q changes as the composition changes.</p><div class="equation-pair"><div><div class="eq">'+math(mi('d')+Vsym+mo('=')+frac(Bsym,qsym)+mi('d')+Xsym)+'</div><p class="equation-caption">Small conversion increment × local volume requirement.</p></div><div><div class="eq">'+integ+'</div><p class="equation-caption">The smooth shaded area equals volume from the inlet.</p></div></div><div class="eq highlight">'+math(Vsym+mo('≈')+'<munder><mo>∑</mo><mi>j</mi></munder>'+frac(Bsym,mi('q')+mo('(')+sub(mi('X'),mi('j'))+mo('*')+mo(')'))+mo('Δ')+sub(mi('X'),mi('j')))+'</div><div class="shell-info"><div><span>Smooth integral (ft³)</span><strong>'+num(local.V,5)+'</strong></div><div><span>Midpoint shell sum (ft³)</span><strong>'+num(rr.sum,5)+'</strong></div><div><span>Relative sum error</span><strong>'+(local.V?err.toFixed(3)+'%':'—')+'</strong></div></div><div class="inset"><strong>'+rr.rects.length+' conversion intervals shown.</strong> Each interval comes from a spatial shell; the last may be partial. Equal-volume shells give different ΔX values because the rate changes. Each orange rectangle uses q at the midpoint of its conversion interval. The shaded area is the continuous limit of this sum.</div><p class="teaching-copy" style="margin-top:14px">The integrand B/q has units ft³. Multiplication by dimensionless dX gives an element of reactor volume. '+(solution.ammonia?'As X approaches equilibrium, q approaches zero, so the required volume per additional conversion rises without bound.':'For the first-order law, q decreases as A is consumed, so later conversion increments require more volume.')+'</p><div class="learn-prompt"><strong>Try it.</strong> Show the shell sum and move from inlet to outlet. Each rectangle contributes a little reactor volume. Compare their sum with the smooth shaded area.</div>';
+ }
+}
+function updateSetup(){
+ const a=solution.ammonia;
+ $('reaction').innerHTML=a?'N<sub>2</sub> + 3 H<sub>2</sub> ⇌ 2 NH<sub>3</sub>':'A → B';
+ $('modelHint').textContent=a?'The reversible catalytic rate supplied in the notes.':'The analytical first-order comparison in the notes.';
+ $('modelBadge').textContent=a?'300 atm · 900 °F · ideal gas':'Constant flow · constant temperature';
+ $('specificAssumption').textContent=a?'Fixed T and P; gas flow decreases during reaction.':'Constant temperature and volumetric flow.';
+ $('bedHint').textContent=a?'Total bed volume. For plug age only: void fraction ε = 0.40.':'Empty tube. Space time equals the ideal transit time.';
+ $('feedControl').classList.toggle('hidden',!a);$('firstControl').classList.toggle('hidden',a);
+ $('volumeNumber').max=a?'1':'3';$('volume').max=a?'0':String(Math.log10(3));
+ $('volumeMaxLabel').textContent=(a?'1':'3')+' ft³ · log scale';
+ $('volumeNumber').value=Number(state.V.toPrecision(6));$('volume').value=Math.log10(state.V);
+ $('feedValue').textContent=num(state.B,3)+' lbmol/h';$('kValue').textContent=num(state.k,3)+' h⁻¹';
+ $('conversionLabel').innerHTML='Local '+(a?'N₂':'A')+' conversion <i>X</i>';
+ $('conversionDetail').textContent=a?'Equilibrium limit: '+pct(Xeq):'Irreversible first-order reaction';
+ $('outletX').textContent=pct(solution.out.x);
+ $('ageDetail').textContent=a?'Space time τ = '+num(solution.tau,3)+' s':'Space time τ = transit time';
+ $('reactorLegend').innerHTML=solution.names.map((n,i)=>'<span><i class="swatch" style="background:'+solution.colors[i]+'"></i>'+n+'</span>').join('')+'<span><i class="swatch outline"></i>Fluid plug</span>'+(state.mode!=='plug'?'<span><i class="swatch shell"></i>Fixed shell</span>':'');
+ const msgs={plug:['A moving plug, a steady profile','The orange plug moves through a composition profile that is constant in time. Shading follows the product mole fraction and is uniform across each cross-section.'],shell:['Balance one thin slice of the tube','The green shell is a fixed control volume: flow in − flow out + net generation = 0. The orange plug passes through it.'],integral:['Add shells from the inlet to the selected position','Each little volume contributes a conversion increment. The linked integral turns those increments back into reactor volume.']};
+ $('reactorTitle').textContent=msgs[state.mode][0];$('context').textContent=msgs[state.mode][1];
+ ['plug','shell','integral'].forEach(m=>{$('tab-'+m).setAttribute('aria-selected',String(m===state.mode));$('tab-'+m).setAttribute('tabindex',m===state.mode?'0':'-1');});
+ $('lesson').setAttribute('aria-labelledby','tab-'+state.mode);
+ $('profileToggle').textContent=state.conversionPlot?'Show concentrations':'Show conversion';
+ $('rectToggle').setAttribute('aria-pressed',String(state.rects));$('rectToggle').textContent=state.rects?'Hide shell sum':'Show shell sum';
+ renderDetails();
+}
+function render(){
+ const local=solution.atFraction(state.pos),sh=selectedShell();
+ $('position').value=Math.round(state.pos*1000);$('positionValue').textContent=(state.pos*100).toFixed(1)+'% of length';
+ $('localX').textContent=pct(local.x);$('localV').textContent=num(local.V,4)+' ft³';$('localRate').textContent=num(local.q,4);$('plugAge').textContent=num(local.age,3)+' s';
+ $('positionDetail').textContent='z / L = '+state.pos.toFixed(3)+' · V_R,out = '+num(state.V,4)+' ft³';
+ $('reactor').innerHTML=reactorSVG(local,sh);$('profile').innerHTML=profileSVG(local,sh);$('integral').innerHTML=integralSVG(local);
+ $('profileCaption').textContent=state.conversionPlot?'The local slope dX/dV_R = q/B decreases as the net rate falls. Click the graph to select a position.':(solution.ammonia?'All three concentrations use the local gas flow. Total concentration P/(RT) stays constant.':'A is consumed and B is formed at constant total flow. Click the graph to select a position.');
+ $('integralCaption').textContent=state.rects?'Orange rectangles approximate the integral over conversion intervals from the spatial shells.':'Green shading ends at the selected conversion. The pale area continues to the reactor outlet.';
+ $('integralArea').textContent=num(local.V,5)+' ft³';
+ renderLesson(local,sh);
+}
+function rebuild(){stop();solution=makeSolution(state);updateSetup();render();}
+function stop(){state.playing=false;cancelAnimationFrame(frameId);lastFrame=0;$('play').textContent='▶ Follow plug';$('play').setAttribute('aria-label','Animate the fluid plug');}
+function setPosition(f){stop();state.pos=clamp(f,0,1);state.shellAnchor=state.pos;render();}
+function play(){
+ if(state.playing){stop();return;}if(state.pos>=.9999)state.pos=0;
+ state.playing=true;lastFrame=0;ageFraction=solution.atFraction(state.pos).age/solution.out.age;
+ $('play').textContent='Ⅱ Pause';$('play').setAttribute('aria-label','Pause animation');frameId=requestAnimationFrame(tick);
+}
+function tick(time){
+ if(!state.playing)return;if(!lastFrame)lastFrame=time;const dt=Math.min(.1,(time-lastFrame)/1000);lastFrame=time;
+ ageFraction=Math.min(1,ageFraction+dt/12);const p=solution.atAgeFraction(ageFraction);state.pos=p.V/state.V;
+ render();if(ageFraction>=1){state.pos=1;stop();render();}else frameId=requestAnimationFrame(tick);
+}
+function setMode(mode){state.mode=mode;state.shellAnchor=state.pos;stop();if(mode==='integral')state.rects=true;updateSetup();render();}
+function reset(){stop();Object.assign(state,{model:'ammonia',mode:'plug',V:.100244,B:1,k:1,pos:.45,shellAnchor:.45,rects:false,conversionPlot:false});$('model').value='ammonia';$('feed').value=1;$('k').value=1;rebuild();}
+function showToast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),2600);}
+$('model').addEventListener('change',e=>{state.model=e.target.value;state.V=state.model==='ammonia'?.100244:1;state.pos=.45;state.shellAnchor=.45;rebuild();});
+$('volume').addEventListener('input',e=>{state.V=10**Number(e.target.value);rebuild();});
+$('volumeNumber').addEventListener('change',e=>{const v=Number(e.target.value);if(Number.isFinite(v)&&v>0)state.V=clamp(v,.001,state.model==='ammonia'?1:3);rebuild();});
+$('feed').addEventListener('input',e=>{state.B=Number(e.target.value);rebuild();});
+$('k').addEventListener('input',e=>{state.k=Number(e.target.value);rebuild();});
+$('position').addEventListener('input',e=>setPosition(Number(e.target.value)/1000));
+$('play').addEventListener('click',play);$('reset').addEventListener('click',reset);
+['plug','shell','integral'].forEach((m,i)=>{
+ $('tab-'+m).addEventListener('click',()=>setMode(m));
+ $('tab-'+m).addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const order=['plug','shell','integral'];let n=e.key==='Home'?0:e.key==='End'?2:(i+(e.key==='ArrowRight'?1:2))%3;setMode(order[n]);$('tab-'+order[n]).focus();}});
+});
+$('profileToggle').addEventListener('click',()=>{state.conversionPlot=!state.conversionPlot;updateSetup();render();});
+$('rectToggle').addEventListener('click',()=>{state.rects=!state.rects;updateSetup();render();});
+function svgClick(el,width,x0,x1,callback){el.addEventListener('click',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*width;callback(clamp((x-x0)/(x1-x0),0,1));});}
+svgClick($('reactor'),920,138,780,setPosition);svgClick($('profile'),450,53,434,setPosition);
+svgClick($('integral'),450,53,434,f=>{const xMax=solution.ammonia?Xeq:Math.min(1,Math.max(.8,solution.out.x+.1*(1-solution.out.x))),x=Math.min(solution.out.x,f*xMax);setPosition(x===solution.out.x?1:solution.volumeForX(x)/state.V);});
+$('download').addEventListener('click',()=>{const clone=document.documentElement.cloneNode(true);const script=clone.querySelector('script');if(script)script.removeAttribute('data-codex');const blob=new Blob(['<!DOCTYPE html>\n'+clone.outerHTML],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='CBE140_PFR_Explorer.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);showToast('HTML downloaded. Open it in a browser; it also works offline.');});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+// A small read-only interface supports reproducible model and interaction checks.
+window.PFRExplorer={constants:CONST,Xeq,ammoniaRate,makeSolution,getState:()=>({...state,shellCount:SHELL_COUNT}),getCurrent:()=>solution.atFraction(state.pos),riemannSum};
+solution=makeSolution(state);updateSetup();render();
+})();
+</script>
+</body>
+</html>

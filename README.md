@@ -11,14 +11,19 @@ https://swboettcher.github.io/CBE-140-interactive/
 - Lecture 1: Transient Tank Mass Balance  
   https://swboettcher.github.io/CBE-140-interactive/lecture01/transient-tank/
 
+- Plug-Flow Reactor Design  
+  https://swboettcher.github.io/CBE-140-interactive/pfr/
+
 ## Repository structure
 
 ```text
 CBE-140-interactive/
 ├── index.html
-└── lecture01/
-    └── transient-tank/
-        └── index.html
+├── lecture01/
+│   └── transient-tank/
+│       └── index.html
+└── pfr/
+    └── index.html
 ```
 
 The site is designed for GitHub Pages and requires no server-side code.
